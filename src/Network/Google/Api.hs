@@ -203,14 +203,16 @@ setBodySource len source request =
     request { requestBody = requestBodySource len source }
 
 -- | Modify the Request's status check to not treat the given status as an error
+--
+-- XXX: The default behavior of `checkResponse` is actually to do nothing...
 allowStatus :: Status -> Request -> Request
 allowStatus status request =
-    let original = checkStatus request
-        override s r c
-            | s == status = Nothing
-            | otherwise = original s r c
+    let original = checkResponse request
+        override req res
+            | responseStatus res == status = return ()
+            | otherwise = original req res
 
-    in request { checkStatus = override }
+    in request { checkResponse = override }
 
 -- | Decode a JSON body, capturing failure as an @'ApiError'@
 decodeBody :: FromJSON a => Response BL.ByteString -> Api a

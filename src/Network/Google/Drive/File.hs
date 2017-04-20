@@ -54,7 +54,7 @@ import Data.Maybe (isJust)
 import Data.Monoid ((<>))
 import Data.Text (Text)
 import Data.Time (UTCTime)
-import Network.HTTP.Conduit (HttpException(..))
+import Network.HTTP.Conduit (HttpException(..), HttpExceptionContent(..), responseStatus)
 import Network.HTTP.Types (status404)
 
 import qualified Data.Traversable as F
@@ -127,8 +127,8 @@ getFile fid = (Just <$> getJSON (fileUrl fid) [])
     `catchError` handleNotFound
 
   where
-    handleNotFound (HttpError (StatusCodeException s _ _))
-        | s == status404 = return Nothing
+    handleNotFound (HttpError (HttpExceptionRequest _ (StatusCodeException res _)))
+        | responseStatus res == status404 = return Nothing
     handleNotFound e = throwError e
 
 -- | Create a @File@ from @FileData@

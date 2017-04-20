@@ -126,7 +126,7 @@ retryWithBackoff seconds f = f `catchError` \e ->
 
   where
     retryable :: ApiError -> Bool
-    retryable (HttpError (StatusCodeException s _ _)) = statusIsServerError s
+    retryable (HttpError (HttpExceptionRequest _ (StatusCodeException res _))) = statusIsServerError $ responseStatus res
     retryable _ = False
 
     delay :: Api ()

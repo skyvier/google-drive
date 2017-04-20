@@ -31,7 +31,7 @@ Library
                       , conduit-extra   >= 1.1.4        && < 1.2
                       , directory
                       , filepath
-                      , http-conduit    >= 2.1          && < 2.3
+                      , http-conduit    >= 2.2.3          && < 2.3
                       , http-types
                       , mtl             >= 2.2.1
                       , random
