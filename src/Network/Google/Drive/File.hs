@@ -32,6 +32,7 @@ module Network.Google.Drive.File
     , updateFile
     , deleteFile
     , downloadFile
+    , downloadJSONFile
 
     -- * Utilities
     , isFolder
@@ -158,6 +159,13 @@ deleteFile f = void $ requestLbs (fileUrl $ fileId f) $ setMethod "DELETE"
 downloadFile :: File -> DownloadSink a -> Api (Maybe a)
 downloadFile f sink = F.forM (fileDownloadUrl $ fileData f) $ \url ->
     getSource (T.unpack url) [] sink
+
+-- | Download a JSON formatted @File@ without a sink.
+--
+-- Return @Nothing@ if the file is not downloadable.
+downloadJSONFile :: FromJSON a => File -> Api (Maybe a)
+downloadJSONFile file = F.forM (fileDownloadUrl $ fileData file) $ \url ->
+   getJSON (T.unpack url) []
 
 newFile :: FileTitle -> Maybe UTCTime -> FileData
 newFile title maybeModified = FileData
